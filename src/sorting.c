@@ -4,6 +4,13 @@
 #include <string.h>
 #include <stdio.h>
 
+int GetMedian(int x1, int x2, int x3) {
+    int aux1, aux2;
+    aux1 = (x1 > x2)? x1 : x2;  //get the bigger value between x1 and x2
+    aux2 = (x2 > x3)? x2 : x3;  //get the bigger value between x2 and x3
+    return (aux1 < aux2)? aux1 : aux2;  //the smaller value between aux1 and aux2 will be the median
+}
+
 int Partition(int Esq, int Dir, int *i, int *j, int *A, int *swap, int type) {
     int x, w, comparisons = 0;
     *i = Esq; *j = Dir;
@@ -11,10 +18,8 @@ int Partition(int Esq, int Dir, int *i, int *j, int *A, int *swap, int type) {
         x = A[(*i + *j)/2]; /* middle element is pivot */
     else if (type == 1) 
         x = A[Esq]; /* first element is pivot */
-    else {
-        int x1 = (A[Esq] > A[Dir])? A[Esq] : A[Dir];
-        x = A[(*i + *j)/2] > x1? x1 : A[(*i + *j)/2]; /* obtaining the pivot by median of three*/
-    }
+    else
+        x = GetMedian(A[Esq], A[Esq + Dir]/2, A[Dir]); /* obtaining the pivot by median of three*/
     
     do {
         while (x > A[*i]) { 

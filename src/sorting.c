@@ -11,28 +11,36 @@ int GetMedian(int x1, int x2, int x3) {
     return (aux1 < aux2)? aux1 : aux2;  //the smaller value between aux1 and aux2 will be the median
 }
 
-int Partition(int Esq, int Dir, int *i, int *j, int *A, int *swap, int type) {
-    int x, w, comparisons = 0;
-    *i = Esq; *j = Dir;
+int GetPivot(int *A, int Left, int Right, int type) {
     if (type == 0)
-        x = A[(*i + *j)/2]; /* middle element is pivot */
+        return A[(Left + Right)/2]; /* middle element is pivot */
     else if (type == 1) 
-        x = A[Esq]; /* first element is pivot */
+        return A[Left]; /* first element is pivot */
     else
-        x = GetMedian(A[Esq], A[Esq + Dir]/2, A[Dir]); /* obtaining the pivot by median of three*/
+        return GetMedian(A[Left], A[Left + Right]/2, A[Right]); /* obtaining the pivot by median of three*/
+}
+
+void Swap(int *x1, int *x2) {
+    int aux = *x1;
+    *x1 = *x2;
+    *x2 = aux;
+}
+
+int Partition(int Left, int Right, int *i, int *j, int *A, long *swap, int type) {
+    int x, comparisons = 0;
+    *i = Left; *j = Right;
+    x = GetPivot(A, Left, Right, type);
     
     do {
         while (x > A[*i]) { 
             (*i)++; comparisons++;
-        }
-        comparisons++;
+        } comparisons++;
         while (x < A[*j]) {
             (*j)--; comparisons++;
-        }
-        comparisons++;
+        } comparisons++;
         
         if (*i <= *j) {
-            w = A[*i]; A[*i] = A[*j]; A[*j] = w;
+            Swap(&A[*i], &A[*j]);
             (*i)++; (*j)--; (*swap)++;
         }
     } while (*i <= *j);
@@ -42,32 +50,32 @@ int Partition(int Esq, int Dir, int *i, int *j, int *A, int *swap, int type) {
 //type = 0 -> Classic QuickSort
 //type = 1 -> First Element QuickSort
 //type = 2 -> Median of Three
-long int Sort(int Esq, int Dir, int *A, int type, int *swap) {
+long Sort(int Left, int Right, int *A, int type, long *swap) {
     int i, j;
     long int comparisons;
-    if ((type == 2) && (Esq-Dir <= 2))
+    if ((type == 2) && (Left-Right <= 2))
         type = 0;   //setting to classic quicksort is there's less than 3 elements in array
-    comparisons = Partition(Esq, Dir, &i, &j, A, swap, type);
-    if (Esq < j) comparisons += Sort(Esq, j, A, type, swap);
-    if (i < Dir) comparisons += Sort(i, Dir, A, type, swap);
+    comparisons = Partition(Left, Right, &i, &j, A, swap, type);
+    if (Left < j) comparisons += Sort(Left, j, A, type, swap);
+    if (i < Right) comparisons += Sort(i, Right, A, type, swap);
     return comparisons;
 }
 
-long int SortI(int Esq, int Dir, int *A, int MinSize, int *swap) {
+long SortI(int Left, int Right, int *A, int MinSize, long *swap) {
     int i, j;
     long int comparisons;
-    //Call partition while the array's size is bigger than Size
-    if ((Dir - Esq) > MinSize) {
-        comparisons = Partition(Esq, Dir, &i, &j, A, swap, 2);
-        comparisons += SortI(Esq, j, A, MinSize, swap);
-        comparisons += SortI(i, Dir, A, MinSize, swap);
+    //Call partition while the array's size is bigger than MinSize
+    if ((Right - Left) > MinSize) {
+        comparisons = Partition(Left, Right, &i, &j, A, swap, 2);
+        comparisons += SortI(Left, j, A, MinSize, swap);
+        comparisons += SortI(i, Right, A, MinSize, swap);
     }
     else
-        comparisons = Insertion(A, Esq, Dir+1, swap);
+        comparisons = Insertion(A, Left, Right+1, swap);
     return comparisons;
 }
 
-long int QuickSort(int *A, int n, const char *quickSortType, int *swap) {
+long QuickSort(int *A, int n, const char *quickSortType, long *swap) {
     long int comparisons = 0;
     if (!strcmp(quickSortType, "QC")) {
         /* execute classic quicksort */
@@ -96,19 +104,18 @@ long int QuickSort(int *A, int n, const char *quickSortType, int *swap) {
     return comparisons;
 }
 
-int Insertion(int *A, int Esq, int Dir, int *swap) {
+int Insertion(int *A, int Left, int Right, long *swap) {
     int i, j;
     int aux, comparisons = 0;
-    for (i = Esq; i < Dir; i++) {
+    for (i = Left; i < Right; i++) {
         aux = A[i];
         j = i-1;
         while (j >= 0) {
             comparisons++;
-            if(aux >= A[j])
-                break;
+            if(aux >= A[j]) break;
 
             A[j+1] = A[j];
-            j--;(*swap)++;
+            j--; (*swap)++;
         }
         A[j+1] = aux;
     }
@@ -116,10 +123,11 @@ int Insertion(int *A, int Esq, int Dir, int *swap) {
 }
 
 //Non-Recusive QuickSort
-int NRQuickSort(int *A, int n, int *swap) {
+long NRQuickSort(int *A, int n, long *swap) {
     Stack pilha;
     Item item;  //left e right
-    int left, right, i, j, comparisons = 0;
+    int left, right, i, j;
+    long comparisons = 0;
  
     MakeEmptyStack(&pilha);
     left = 0;
@@ -149,4 +157,5 @@ int NRQuickSort(int *A, int n, int *swap) {
             left = item.left;
         }
     } while (!IsEmpty(&pilha));
+    return comparisons;
 }

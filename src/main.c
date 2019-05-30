@@ -52,14 +52,14 @@ void freeArrays(int **arrays) {
 
 int main(int argc, char const *argv[]) {
     int **arrays, **copy, swap = 0;
-    long *median_time;
+    long *exec_time, median;
     double comparisons = 0.0, aux_swap = 0.0;
     struct timespec start, end;
     
     srand(time(NULL));
 
     arrays = generateArrays(argv[2], atoi(argv[3]));
-    median_time = (long *) malloc(N_ARRAYS * sizeof(long));
+    exec_time = (long *) malloc(N_ARRAYS * sizeof(long));
 
     //copying original arrays to not lose their information only if the user enters flag -p
     if (argc == 5 && !strcmp(argv[4], "-p"))
@@ -74,16 +74,22 @@ int main(int argc, char const *argv[]) {
         swap = 0;
         
         clock_gettime(CLOCK_REALTIME, &end);
-        median_time[i] = 1.e+6 * (double) (end.tv_sec - start.tv_sec) 
+        exec_time[i] = 1.e+6 * (double) (end.tv_sec - start.tv_sec) 
                         + 1.e-3 * (double) (end.tv_nsec - start.tv_nsec);
     }
     swap = (int)aux_swap;
     
     //using aux_swap to not modify the original swap count
     //sorting to get median time
-    QuickSort(median_time, N_ARRAYS, "QC", &aux_swap);
+    QuickSort(exec_time, N_ARRAYS, "QC", &aux_swap);
+    median = (exec_time[N_ARRAYS/2] + exec_time[(N_ARRAYS/2) - 1])/2;
+    
     printf("%s %s %d %.0lf %d %ld\n", argv[1], argv[2], atoi(argv[3]),
-    comparisons, swap, median_time[N_ARRAYS/2]);
+    comparisons, swap, median);
+
+    // for (int i = 0; i < N_ARRAYS; i++) {
+    //     printf("%d\n", exec_time[i]);   
+    // }
 
     if (argc == 5 && !strcmp(argv[4], "-p")) {
         for (int i = 0; i < N_ARRAYS; i++) {
@@ -93,6 +99,6 @@ int main(int argc, char const *argv[]) {
     }
     
     freeArrays(arrays);
-    free(median_time);
+    free(exec_time);
     return 0;
 }

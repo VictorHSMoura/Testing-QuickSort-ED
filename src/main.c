@@ -52,7 +52,7 @@ void freeArrays(int **arrays) {
 
 int main(int argc, char const *argv[]) {
     int **arrays, **copy, swap = 0;
-    long *exec_time, median;
+    int *exec_time, median;
     double comparisons = 0.0, aux_swap = 0.0;
     struct timespec start, end;
     
@@ -84,12 +84,8 @@ int main(int argc, char const *argv[]) {
     QuickSort(exec_time, N_ARRAYS, "QC", &aux_swap);
     median = (exec_time[N_ARRAYS/2] + exec_time[(N_ARRAYS/2) - 1])/2;
     
-    printf("%s %s %d %.0lf %d %ld\n", argv[1], argv[2], atoi(argv[3]),
+    printf("%s %s %d %.0lf %d %d\n", argv[1], argv[2], atoi(argv[3]),
     comparisons, swap, median);
-
-    // for (int i = 0; i < N_ARRAYS; i++) {
-    //     printf("%d\n", exec_time[i]);   
-    // }
 
     if (argc == 5 && !strcmp(argv[4], "-p")) {
         for (int i = 0; i < N_ARRAYS; i++) {

@@ -5,5 +5,5 @@ int Partition(int Left, int Right, int *i, int *j, int *A, long *swap, int type)
 long Sort(int Left, int Right, int *A, int type, long *swap);
 long SortI(int Left, int Right, int *A, int MinSize, long *swap);
 long QuickSort(int *A, int n, const char *quickSortType, long *swap);
-int Insertion(int *A, int Left, int Right, long *swap);
+long Insertion(int *A, int Left, int Right, long *swap);
 long NRQuickSort(int *A, int n, long *swap);

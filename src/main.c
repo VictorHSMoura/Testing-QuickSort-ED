@@ -4,7 +4,7 @@
 #include <time.h>
 #include "headers/sorting.h"
 
-#define N_ARRAYS 20
+#define N_ARRAYS 2
 
 void printArray(int *array, int arraySize) {
     for (int i = 0; i < arraySize; i++)

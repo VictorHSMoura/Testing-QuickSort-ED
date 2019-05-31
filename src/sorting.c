@@ -17,7 +17,7 @@ int GetPivot(int *A, int Left, int Right, int type) {
     else if (type == 1) 
         return A[Left]; /* first element is pivot */
     else
-        return GetMedian(A[Left], A[Left + Right]/2, A[Right]); /* obtaining the pivot by median of three*/
+        return GetMedian(A[Left], A[(Left + Right)/2], A[Right]); /* obtaining the pivot by median of three*/
 }
 
 void Swap(int *x1, int *x2) {
@@ -66,7 +66,10 @@ long SortI(int Left, int Right, int *A, int MinSize, long *swap) {
     long int comparisons;
     //Call partition while the array's size is bigger than MinSize
     if ((Right - Left) > MinSize) {
-        comparisons = Partition(Left, Right, &i, &j, A, swap, 2);
+        if((Right - Left) > 2)
+            comparisons = Partition(Left, Right, &i, &j, A, swap, 2);
+        else
+            comparisons = Partition(Left, Right, &i, &j, A, swap, 0);
         comparisons += SortI(Left, j, A, MinSize, swap);
         comparisons += SortI(i, Right, A, MinSize, swap);
     }
@@ -104,7 +107,7 @@ long QuickSort(int *A, int n, const char *quickSortType, long *swap) {
     return comparisons;
 }
 
-int Insertion(int *A, int Left, int Right, long *swap) {
+long Insertion(int *A, int Left, int Right, long *swap) {
     int i, j;
     int aux, comparisons = 0;
     for (i = Left; i < Right; i++) {

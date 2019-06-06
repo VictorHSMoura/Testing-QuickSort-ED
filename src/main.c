@@ -4,7 +4,7 @@
 #include <time.h>
 #include "headers/sorting.h"
 
-#define N_ARRAYS 2
+#define N_ARRAYS 20
 
 void printArray(int *array, int arraySize) {
     for (int i = 0; i < arraySize; i++)
@@ -51,25 +51,30 @@ void freeArrays(int **arrays) {
 }
 
 int main(int argc, char const *argv[]) {
-    int **arrays, **copy, swap = 0;
-    int *exec_time, median;
+    int **arrays, **copy, *exec_time, median, arraySize;
+    long swap = 0;
     double comparisons = 0.0, aux_swap = 0.0;
+    char quickSortType[5], arrayType[5];
     struct timespec start, end;
     
     srand(time(NULL));
 
-    arrays = generateArrays(argv[2], atoi(argv[3]));
-    exec_time = (long *) malloc(N_ARRAYS * sizeof(long));
+    strcpy(quickSortType, argv[1]);
+    strcpy(arrayType, argv[2]);
+    arraySize = atoi(argv[3]);
+
+    arrays = generateArrays(arrayType, arraySize);
+    exec_time = (int *) malloc(N_ARRAYS * sizeof(int));
 
     //copying original arrays to not lose their information only if the user enters flag -p
     if (argc == 5 && !strcmp(argv[4], "-p"))
-        copy = copyArrays(arrays, atoi(argv[3]));
+        copy = copyArrays(arrays, arraySize);
 
     for (int i = 0; i < N_ARRAYS; i++) {
         clock_gettime(CLOCK_REALTIME, &start);
         
         //dividing by N_ARRAYS to get average while preventing overflow
-        comparisons += QuickSort(arrays[i], atoi(argv[3]), argv[1], &swap)/(double)N_ARRAYS;
+        comparisons += QuickSort(arrays[i], arraySize, quickSortType, &swap)/(double)N_ARRAYS;
         aux_swap += swap/(double)N_ARRAYS;
         swap = 0;
         
@@ -77,19 +82,19 @@ int main(int argc, char const *argv[]) {
         exec_time[i] = 1.e+6 * (double) (end.tv_sec - start.tv_sec) 
                         + 1.e-3 * (double) (end.tv_nsec - start.tv_nsec);
     }
-    swap = (int)aux_swap;
+    swap = (long)aux_swap;
     
     //using aux_swap to not modify the original swap count
     //sorting to get median time
     QuickSort(exec_time, N_ARRAYS, "QC", &aux_swap);
     median = (exec_time[N_ARRAYS/2] + exec_time[(N_ARRAYS/2) - 1])/2;
     
-    printf("%s %s %d %.0lf %d %d\n", argv[1], argv[2], atoi(argv[3]),
+    printf("%s %s %d %.0lf %ld %d\n", quickSortType, arrayType, arraySize,
     comparisons, swap, median);
 
     if (argc == 5 && !strcmp(argv[4], "-p")) {
         for (int i = 0; i < N_ARRAYS; i++) {
-            printArray(copy[i], atoi(argv[3]));
+            printArray(copy[i], arraySize);
         }
         freeArrays(copy);
     }

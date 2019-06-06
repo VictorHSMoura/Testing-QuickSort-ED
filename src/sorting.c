@@ -5,10 +5,11 @@
 #include <stdio.h>
 
 int GetMedian(int x1, int x2, int x3) {
-    int aux1, aux2;
-    aux1 = (x1 > x2)? x1 : x2;  //get the bigger value between x1 and x2
-    aux2 = (x2 > x3)? x2 : x3;  //get the bigger value between x2 and x3
-    return (aux1 < aux2)? aux1 : aux2;  //the smaller value between aux1 and aux2 will be the median
+    if (x1 >= x2 && x1 <= x3 || x1 >= x3 && x1 <= x2)
+        return x1;
+    if (x2 >= x1 && x2 <= x3 || x2 >= x3 && x2 <= x1)
+        return x2;
+    return x3;
 }
 
 int GetPivot(int *A, int Left, int Right, int type) {

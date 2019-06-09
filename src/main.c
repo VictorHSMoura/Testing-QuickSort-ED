@@ -4,8 +4,9 @@
 #include <time.h>
 #include "headers/sorting.h"
 
-#define N_ARRAYS 20
+#define N_ARRAYS 20 //number of arrays used on tests
 
+//print a sigle array
 void printArray(int *array, int arraySize) {
     for (int i = 0; i < arraySize; i++)
         printf("%d ", array[i]);
@@ -19,19 +20,20 @@ int **generateArrays(const char *arrayType, int arraySize) {
 
     for (int i = 0; i < N_ARRAYS; i++) {
         arrays[i] = (int *) calloc(arraySize, sizeof(int));
-        if (!strcmp(arrayType, "OrdC")) //ascending order array
+        if (!strcmp(arrayType, "OrdC")) //ascending order array (1 to n)
             for (int j = 0; j < arraySize; j++)
-                arrays[i][j] = j + (rand() % 2);
-        else if (!strcmp(arrayType, "OrdD")) //descending order array
+                arrays[i][j] = j;
+        else if (!strcmp(arrayType, "OrdD")) //descending order array (n to 1)
             for (int j = 0; j < arraySize; j++)
-                arrays[i][j] = (arraySize - j) + (rand() % 2);
-        else if (!strcmp(arrayType, "Ale")) //random array
+                arrays[i][j] = (arraySize - j);
+        else if (!strcmp(arrayType, "Ale")) //random array (numbers between 0 and n-1)
             for (int j = 0; j < arraySize; j++)
                 arrays[i][j] = rand() % arraySize;
     }
     return arrays;
 }
 
+//generate a copy of a set of arrays
 int **copyArrays(int **arrays, const int arraySize) {
     int **copy;
     copy = (int **) malloc(N_ARRAYS * sizeof(int *));
@@ -43,6 +45,7 @@ int **copyArrays(int **arrays, const int arraySize) {
     return copy;
 }
 
+//free a set of arrays
 void freeArrays(int **arrays) {
     for (int i = 0; i < N_ARRAYS; i++) {
         free(arrays[i]);
@@ -59,6 +62,7 @@ int main(int argc, char const *argv[]) {
     
     srand(time(NULL));
 
+    //copying arguments passed for the program to more adequate variables
     strcpy(quickSortType, argv[1]);
     strcpy(arrayType, argv[2]);
     arraySize = atoi(argv[3]);
@@ -92,6 +96,7 @@ int main(int argc, char const *argv[]) {
     printf("%s %s %d %.0lf %ld %d\n", quickSortType, arrayType, arraySize,
     comparisons, swap, median);
 
+    //print the copy of the original arrays if the flag -p exists
     if (argc == 5 && !strcmp(argv[4], "-p")) {
         for (int i = 0; i < N_ARRAYS; i++) {
             printArray(copy[i], arraySize);
